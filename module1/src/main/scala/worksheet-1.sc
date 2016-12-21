@@ -1,8 +1,16 @@
-def sayHello(name:String)(implicit whoAreYou: () => String) = {
-  s"Hello $name! My name is ${whoAreYou()}"
+abstract class Person(fname: String, lname: String){
+  def fullName = { s"$fname-$lname"}
 }
 
-implicit def provideName() = {"Scala"}
-implicit val myString = "implicits"
-val fast = sayHello("test")   // single param passed implicit assumed by default
-println(fast)
+case class Student(fname:String, lname:String, id:Int) extends Person(fname,lname)
+
+val me = Student("Fedor", "Hajdu", 99)
+
+def getFullId[T <: Person](something: T) = {
+  something match {
+    case Student(fname,lname,id) => s"$fname-$lname-$id"
+    case p: Person => p.fullName
+  }
+}
+
+getFullId(me)
