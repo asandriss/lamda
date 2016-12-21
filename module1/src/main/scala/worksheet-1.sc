@@ -6,7 +6,7 @@ case class Student(fname:String, lname:String, id:Int) extends Person(fname,lnam
 
 val me = Student("Fedor", "Hajdu", 99)
 
-def getFullId[T <: Person](something: T) = {
+def getFullId[T <: Person](something: T) = {      // c# equivalent getFullId<T>(T var) where T: Person
   something match {
     case Student(fname,lname,id) => s"$fname-$lname-$id"
     case p: Person => p.fullName
@@ -14,3 +14,14 @@ def getFullId[T <: Person](something: T) = {
 }
 
 getFullId(me)
+
+implicit class stringUtils(myString: String){
+  def scalaWordCount() =  {
+    val split = myString.split("\\s+")
+    val grouped = split.groupBy(word => word)
+    val countPerKey = grouped.mapValues(group => group.length)
+    countPerKey
+  }
+}
+
+"Spark collections mimic Scala collections".scalaWordCount()
