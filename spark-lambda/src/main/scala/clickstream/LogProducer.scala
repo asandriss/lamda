@@ -58,4 +58,5 @@ object LogProducer extends App {
       Thread sleep sleeping
     }
   }
+  fw.close()
 }
