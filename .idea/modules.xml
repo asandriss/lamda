@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/lambda.iml" filepath="$PROJECT_DIR$/lambda.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spark-lambda/spark-lambda.iml" filepath="$PROJECT_DIR$/spark-lambda/spark-lambda.iml" />
     </modules>
   </component>
 </project>
