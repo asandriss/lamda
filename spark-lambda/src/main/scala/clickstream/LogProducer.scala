@@ -44,5 +44,18 @@ object LogProducer extends App {
       case "Internal" => Pages(rnd.nextInt(Pages.length-1))
       case _ => ""
     }
+    val visitor = Visitors(rnd.nextInt(Visitors.length-1))
+    val page = Pages(rnd.nextInt(Pages.length-1))
+    val product = Products(rnd.nextInt(Products.length-1))
+
+    val line = s"$adjustedTimestamp\t$referrer\t$prevPage\t$visitor\t$page\t$product\n"
+    fw.write(line)
+
+    if(iteration % incrementTimeEvery == 0){
+      println(s"Sent $iteration messages!")
+      val sleeping = rnd.nextInt(incrementTimeEvery * 60)
+      println(s"Sleeping for $sleeping ms")
+      Thread sleep sleeping
+    }
   }
 }
