@@ -25,11 +25,13 @@ object BatchJob {
     // initialize RDD
     val sourceFile = "file:///d:/tmp/spark-test/data.tsv"
     val input = sc.textFile(sourceFile)
-    val inputRdd = input.map { line =>
+    val inputRdd = input.flatMap { line =>
       val record = line.split("\\t")
       val ms_in_hour = 1000*60*60
-      Activity(record(0).toLong / ms_in_hour, record(1), record(2), record(3), record(4), record(5), record(6))
+      if(record.length == 7)
+        Some(Activity(record(0).toLong / ms_in_hour, record(1), record(2), record(3), record(4), record(5), record(6)))
+      else
+        None
     }
-
   }
 }
