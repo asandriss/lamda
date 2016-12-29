@@ -9,7 +9,8 @@ import org.apache.spark.{SparkContext, SparkConf}
 object BatchJob {
   def main(args: Array[String]) : Unit = {
 
-    val conf = new SparkConf().setAppName("Lambda Architecture with Spark")
+    val conf = new SparkConf()
+      .setAppName("Lambda Architecture with Spark")
 
     // check if running from IDE
     if(ManagementFactory.getRuntimeMXBean.getInputArguments.toString.contains("IntelliJ IDEA")) {
@@ -17,5 +18,14 @@ object BatchJob {
       System.setProperty("hadoop.home.dir", "D:\\HadoopUtils\\hadoop-common-2.2.0-bin-master\\bin")
       conf.setMaster("local[*]")
     }
+
+    // setup spark context
+    val sc= new SparkContext(conf)
+
+    // initialize RDD
+    val sourceFile = "file:///d:/tmp/spark-test/data.tsv"
+    val input = sc.textFile(sourceFile)
+
+    input.foreach(println)
   }
 }
