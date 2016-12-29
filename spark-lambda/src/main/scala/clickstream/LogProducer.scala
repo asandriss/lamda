@@ -23,6 +23,7 @@ object LogProducer extends App {
   val rnd = new Random()
 
   val filePath = wlc.filePath
+  println(filePath)
   val fw = new FileWriter(filePath, true)
   val incrementTimeEvery = rnd.nextInt(wlc.records - 1) + 1
 
@@ -48,7 +49,7 @@ object LogProducer extends App {
     val page = Pages(rnd.nextInt(Pages.length-1))
     val product = Products(rnd.nextInt(Products.length-1))
 
-    val line = s"$adjustedTimestamp\t$referrer\t$prevPage\t$visitor\t$page\t$product\n"
+    val line = s"$adjustedTimestamp\t$referrer\t$product\t$prevPage\t$visitor\t$page\t$product\n"
     fw.write(line)
 
     if(iteration % incrementTimeEvery == 0){
