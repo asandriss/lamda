@@ -2,7 +2,7 @@ package batch
 
 import java.lang.management.ManagementFactory
 import org.apache.spark.{SparkContext, SparkConf}
-
+import domain._
 /**
   * Created by Fedor.Hajdu on 12/22/2016.
   */
@@ -25,7 +25,11 @@ object BatchJob {
     // initialize RDD
     val sourceFile = "file:///d:/tmp/spark-test/data.tsv"
     val input = sc.textFile(sourceFile)
+    val inputRdd = input.map { line =>
+      val record = line.split("\\t")
+      val ms_in_hour = 1000*60*60
+      Activity(record(0).toLong / ms_in_hour, record(1), record(2), record(3), record(4), record(5), record(6))
+    }
 
-    input.foreach(println)
   }
 }
