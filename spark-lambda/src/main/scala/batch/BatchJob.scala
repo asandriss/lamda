@@ -35,7 +35,7 @@ object BatchJob {
     import sqlContext.implicits._
 
     // initialize RDD
-    val sourceFile = "file:///d:/tmp/spark-test/data.tsv"
+    val sourceFile = "D:\\boxes\\spark-kafka-cassandra-applying-lambda-architecture\\vagrant\\data.tsv"
     val input = sc.textFile(sourceFile)
 
     // Change RDD to data frame
