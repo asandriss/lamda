@@ -5,7 +5,7 @@ import java.lang.management.ManagementFactory
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.log4j.{Level, Logger}
 import domain._
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SQLContext, SaveMode}
 /**
   * Created by Fedor.Hajdu on 12/22/2016.
   */
@@ -35,7 +35,8 @@ object BatchJob {
     import sqlContext.implicits._
 
     // initialize RDD
-    val sourceFile = "D:\\boxes\\spark-kafka-cassandra-applying-lambda-architecture\\vagrant\\data.tsv"
+    //val sourceFile = "D:\\boxes\\spark-kafka-cassandra-applying-lambda-architecture\\vagrant\\data.tsv"
+    val sourceFile = "file:///vagrant/data.tsv"   // use path YARN can read - vagrant is mounted directly.
     val input = sc.textFile(sourceFile)
 
     // Change RDD to data frame
@@ -70,7 +71,12 @@ object BatchJob {
         |sum(case when action = 'page_view' then 1 else 0 end) as page_view_count
         |FROM activity
         |group by product, timestamp_hour
-      """.stripMargin)
+      """.stripMargin).cache()
+
+    activityByProduct.write
+      .partitionBy("timestamp_hour")      // this will create subdirectory with timestamp value
+      .mode(SaveMode.Append)
+      .parquet("hdfs://lamda-pluralsight:9000/lambda/batch1")
 
     visitorsByProduct.foreach(println)
     println("****** Activity by product************")
