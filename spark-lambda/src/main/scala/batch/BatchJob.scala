@@ -61,8 +61,19 @@ object BatchJob {
         |FROM activity
         |GROUP BY product, timestamp_hour
       """.stripMargin)
+    val activityByProduct = sqlContext.sql(
+      """SELECT
+        |product,
+        |timestamp_hour,
+        |sum(case when action = 'purchase' then 1 else 0 end) as purchase_count,
+        |sum(case when action = 'add_to_cart' then 1 else 0 end) as add_to_cart_count,
+        |sum(case when action = 'page_view' then 1 else 0 end) as page_view_count
+        |FROM activity
+        |group by product, timestamp_hour
+      """.stripMargin)
 
-    visitorsByProduct.printSchema()
     visitorsByProduct.foreach(println)
+    println("****** Activity by product************")
+    activityByProduct.foreach(println)
   }
 }
