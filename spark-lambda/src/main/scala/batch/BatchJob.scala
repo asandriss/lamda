@@ -35,7 +35,7 @@ object BatchJob {
     import sqlContext.implicits._
 
     // initialize RDD
-    //val sourceFile = "D:\\boxes\\spark-kafka-cassandra-applying-lambda-architecture\\vagrant\\data.tsv"
+//    val sourceFile = "D:\\boxes\\spark-kafka-cassandra-applying-lambda-architecture\\vagrant\\data.tsv"
     val sourceFile = "file:///vagrant/data.tsv"   // use path YARN can read - vagrant is mounted directly.
     val input = sc.textFile(sourceFile)
 
@@ -50,8 +50,7 @@ object BatchJob {
     }.toDF()
 
     val df = inputDF.select(
-      //add_months(inputDF("timestamp_hour"), 1).as("timestamp_hour"),
-      inputDF("timestamp_hour"),
+      add_months(from_unixtime(inputDF("timestamp_hour")/1000), 1).as("timestamp_hour"),
       inputDF("referrer"), inputDF("action"), inputDF("prevPage"), inputDF("page"), inputDF("visitor"),inputDF("product")
     ).cache()
 
@@ -76,7 +75,7 @@ object BatchJob {
     activityByProduct.write
       .partitionBy("timestamp_hour")      // this will create subdirectory with timestamp value
       .mode(SaveMode.Append)
-      .parquet("hdfs://lamda-pluralsight:9000/lambda/batch1")
+      .parquet("hdfs://lambda-pluralsight:9000/lambda/batch1")
 
     visitorsByProduct.foreach(println)
     println("****** Activity by product************")
