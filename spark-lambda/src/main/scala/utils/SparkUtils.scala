@@ -5,6 +5,7 @@ import java.lang.management.ManagementFactory
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SQLContext
+import org.apache.spark.streaming.{Duration, StreamingContext}
 
 /**
   * Created by Fedor.Hajdu on 1/25/2017.
@@ -44,5 +45,19 @@ object SparkUtils {
   def getSqlContext(sc : SparkContext) ={
     val sqlContext = SQLContext.getOrCreate(sc)
     sqlContext
+  }
+
+  def getStreamingContext(streamingApp : (SparkContext, Duration) => StreamingContext, sc: SparkContext, batchDuration: Duration) = {
+    // try to recreate the context from an existing checkpoint if one exists
+    val creatingFunc = () => streamingApp(sc, batchDuration)
+    val ssc = sc.getCheckpointDir match {
+      // createOnError will overwrite the checkpoint if the code differs from the one in the checkpoint (example, on new version)
+      case Some(checkpointDir) => StreamingContext.getActiveOrCreate(checkpointDir, creatingFunc, sc.hadoopConfiguration, createOnError = true)
+      case None => StreamingContext.getActiveOrCreate(creatingFunc)
+    }
+
+    // copy checkpoints from spark context to streaming context
+    sc.getCheckpointDir.foreach(cp => ssc.checkpoint(cp))
+    ssc
   }
 }
