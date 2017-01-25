@@ -10,10 +10,11 @@ import org.apache.spark.sql.SQLContext
   * Created by Fedor.Hajdu on 1/25/2017.
   */
 object SparkUtils {
+  val isIDE = {
+    ManagementFactory.getRuntimeMXBean.getInputArguments.toString.contains("IntelliJ IDEA")
+  }
+
   def getSparkContext(appName : String) = {
-    val isIDE = {
-      ManagementFactory.getRuntimeMXBean.getInputArguments.toString.contains("IntelliJ IDEA")
-    }
     var checkpointDirectory = ""
 
     val conf = new SparkConf().setAppName(appName)
