@@ -5,6 +5,7 @@ import java.lang.management.ManagementFactory
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.log4j.{Level, Logger}
 import domain._
+import utils.SparkUtils._
 import org.apache.spark.sql.{SQLContext, SaveMode}
 /**
   * Created by Fedor.Hajdu on 12/22/2016.
@@ -12,24 +13,8 @@ import org.apache.spark.sql.{SQLContext, SaveMode}
 object BatchJob {
   def main(args: Array[String]) : Unit = {
 
-    val conf = new SparkConf()
-      .setAppName("Lambda Architecture with Spark")
-
-    // check if running from IDE
-    if(ManagementFactory.getRuntimeMXBean.getInputArguments.toString.contains("IntelliJ IDEA")) {
-      // download winutils for hadoop from here: https://github.com/srccodes/hadoop-common-2.2.0-bin/archive/master.zip
-      System.setProperty("hadoop.home.dir", "D:\\HadoopUtils\\hadoop-common-2.2.0-bin-master")
-      conf.setMaster("local[*]")
-    }
-    Logger.getLogger("org").setLevel(Level.OFF);
-    Logger.getLogger("akka").setLevel(Level.OFF);
-
-    // setup spark context
-    val sc= new SparkContext(conf)
-    val rootLogger = Logger.getRootLogger()
-    rootLogger.setLevel(Level.ERROR)
-
-    implicit val sqlContext = new SQLContext(sc)
+    val sparkContext = getSparkContext("Lambda Architecture with Spark")
+    val sqlContext = getSqlContext(sparkContext)
 
     import org.apache.spark.sql.functions._
     import sqlContext.implicits._
@@ -37,7 +22,7 @@ object BatchJob {
     // initialize RDD
 //    val sourceFile = "D:\\boxes\\spark-kafka-cassandra-applying-lambda-architecture\\vagrant\\data.tsv"
     val sourceFile = "file:///vagrant/data.tsv"   // use path YARN can read - vagrant is mounted directly.
-    val input = sc.textFile(sourceFile)
+    val input = sparkContext.textFile(sourceFile)
 
     // Change RDD to data frame
     val inputDF = input.flatMap { line =>
